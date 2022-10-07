@@ -7,4 +7,4 @@ status:
     gh run view {{latest_run_id}}
 
 download:
-    gh run download {{latest_run_id}} --name tdlibjson.so
+    gh run download {{latest_run_id}} --name libtdjson.so
