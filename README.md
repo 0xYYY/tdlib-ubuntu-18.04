@@ -34,3 +34,7 @@ architecture.
 
 The GitHub workflow is extracted and modified from `tdl`'s `prebuilt-tdlib` package
 [`workflow`](https://github.com/Bannerets/tdl/blob/master/.github/workflows/prebuilt-tdlib.yml).
+
+## License
+
+[MIT](./LICENSE)
