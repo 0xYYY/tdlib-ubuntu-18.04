@@ -1,0 +1,44 @@
+# Extracted from https://github.com/Bannerets/tdl/blob/master/.github/workflows/prebuilt-tdlib.yml
+name: Build TDLib
+# This workflow can be executed using a command like this:
+# gh workflow run build-tdlib.yml --ref develop -f tdlib=v1.8.0
+on:
+    workflow_dispatch:
+        inputs:
+            tdlib:
+                description: "TDLib git ref (e.g. v1.8.0 or a commit hash)"
+                type: string
+                required: true
+# NOTE: The ZLIB_USE_STATIC_LIBS option requires CMake >= 3.24
+jobs:
+    build-linux-x64:
+        name: Build TDLib on Linux x86_64 (glibc)
+        runs-on: ubuntu-18.04
+        steps:
+            - uses: actions/checkout@v3
+              with:
+                  repository: "tdlib/td"
+                  ref: ${{ inputs.tdlib }}
+            - name: Install gperf
+              run: sudo apt-get install -y -q gperf
+            - name: CMake version
+              run: cmake --version
+            - name: Build TDLib
+              run: |
+                  mkdir -p build && cd build
+                  cmake -DCMAKE_BUILD_TYPE=Release \
+                    -DOPENSSL_USE_STATIC_LIBS=TRUE -DZLIB_USE_STATIC_LIBS=TRUE ..
+                  cmake --build . --target tdjson -- -j 2
+                  cd ..
+            - name: Strip
+              run: strip build/libtdjson.so
+            - name: Info
+              run: |
+                  uname -a
+                  ldd --version
+                  openssl version
+                  ldd build/libtdjson.so
+            - uses: actions/upload-artifact@v3
+              with:
+                  name: tdlib-linux-x64
+                  path: build/libtdjson.so
